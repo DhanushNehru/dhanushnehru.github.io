@@ -5,6 +5,8 @@ import { Github, Linkedin, PlayCircle, BookOpen, ExternalLink, ArrowRight, Code 
 const App = () => {
   const [articles, setArticles] = useState<any[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
+  const [videos, setVideos] = useState<any[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(true);
 
   // Fetch Medium Articles via RSS-to-JSON
   useEffect(() => {
@@ -24,13 +26,23 @@ const App = () => {
     fetchArticles();
   }, []);
 
-  // Mock videos since we don't have API key
-  const videos = [
-    { id: '1', title: 'Building the Future of Web with AI', url: 'https://www.youtube.com/@dhanushnehru' },
-    { id: '2', title: 'System Architecture Masterclass', url: 'https://www.youtube.com/@dhanushnehru' },
-    { id: '3', title: 'Vim & Terminal Productivity Hacks', url: 'https://www.youtube.com/@dhanushnehru' },
-    { id: '4', title: 'The Ultimate Guide to Open Source', url: 'https://www.youtube.com/@dhanushnehru' }
-  ];
+  // Fetch YouTube Videos via RSS-to-JSON
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?channel_id=UCkPSG_rUGJqAXmcajZ0mNMw');
+        const data = await res.json();
+        if (data.items) {
+          setVideos(data.items.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Failed to fetch videos', err);
+      } finally {
+        setLoadingVideos(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -200,31 +212,39 @@ const App = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {videos.map((video, i) => (
-              <motion.a
-                href={video.url}
-                target="_blank"
-                rel="noreferrer"
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-chess-dark border border-white/10 p-6 flex items-center gap-6 group hover:border-chess-accent/50 transition-colors"
-              >
-                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#111] flex-shrink-0 flex items-center justify-center text-gray-600 group-hover:text-chess-accent group-hover:scale-110 transition-all duration-300">
-                  <PlayCircle size={32} />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold group-hover:text-white text-gray-200 line-clamp-2">
-                    {video.title}
-                  </h3>
-                  <span className="text-chess-accent text-sm font-mono mt-2 inline-block">Watch on YouTube</span>
-                </div>
-              </motion.a>
-            ))}
-          </div>
+          {loadingVideos ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-chess-dark h-28 animate-pulse border border-white/5"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {videos.map((video, i) => (
+                <motion.a
+                  href={video.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-chess-dark border border-white/10 p-6 flex items-center gap-6 group hover:border-chess-accent/50 transition-colors"
+                >
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#111] flex-shrink-0 flex items-center justify-center text-gray-600 group-hover:text-chess-accent group-hover:scale-110 transition-all duration-300">
+                    <PlayCircle size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold group-hover:text-white text-gray-200 line-clamp-2">
+                      {video.title}
+                    </h3>
+                    <span className="text-chess-accent text-sm font-mono mt-2 inline-block">Watch on YouTube</span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          )}
         </section>
 
       </main>
