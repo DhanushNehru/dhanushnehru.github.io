@@ -1,0 +1,255 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CubeLoader from '../components/CubeLoader.astro';
+import Icon from '../components/Icon.astro';
+import { getArticles, getVideos } from '../lib/feeds';
+
+const BLOG_URL = 'https://blog.dhanushnehru.got-a.page/';
+const YOUTUBE_URL = 'https://www.youtube.com/@dhanushnehru';
+
+const [articles, videos] = await Promise.all([getArticles(), getVideos()]);
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<Layout
+  title="Dhanush Nehru | Grandmaster of Code"
+  description="Software Engineer, Technical Writer, and Open Source Contributor. Articles, videos and projects by Dhanush Nehru."
+>
+  <CubeLoader />
+
+  <div class="min-h-screen pb-20">
+    {/* Background Grid Pattern */}
+    <div class="pointer-events-none fixed inset-0 z-0 bg-chess-pattern opacity-20"></div>
+
+    {/* Header */}
+    <header class="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
+      <a href="/" data-reveal="left" class="flex items-center gap-2 text-2xl font-black tracking-tighter">
+        <div class="flex h-8 w-8 items-center justify-center bg-white font-mono font-bold text-black">D</div>
+        <span class="hidden sm:inline">DHANUSH NEHRU</span>
+      </a>
+
+      <nav data-reveal="right" class="flex items-center gap-6 text-sm font-semibold tracking-wide uppercase">
+        <a href="#about" class="transition-colors hover:text-chess-accent">About</a>
+        <a href="#articles" class="transition-colors hover:text-chess-accent">Writings</a>
+        <a href="#videos" class="transition-colors hover:text-chess-accent">Videos</a>
+        <a href={BLOG_URL} target="_blank" rel="noreferrer" class="transition-colors hover:text-chess-accent">Blog</a>
+      </nav>
+    </header>
+
+    <main class="relative z-10 mx-auto mt-12 max-w-7xl px-4 sm:mt-24 sm:px-8">
+      {/* Hero Section */}
+      <section id="about" class="mb-32 grid scroll-mt-8 grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Hero Left - Dark Square */}
+        <div
+          data-reveal
+          style="--delay: 0ms"
+          class="flex min-h-[500px] flex-col justify-center border border-white/5 bg-chess-dark p-10 sm:p-16"
+        >
+          <h2 class="mb-4 font-mono text-sm tracking-widest text-chess-accent">&lt;GRANDMASTER_OF_CODE /&gt;</h2>
+          <h1 class="mb-6 text-5xl leading-[1.1] font-black sm:text-7xl">
+            Checkmate<br />Complex<br />Systems.
+          </h1>
+          <p class="mb-8 max-w-md text-lg text-gray-400">
+            Software Engineer, Technical Writer, and Open Source Contributor. I build robust architectures and share my
+            knowledge with the global developer community.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a
+              href="https://github.com/DhanushNehru"
+              target="_blank"
+              rel="noreferrer"
+              class="flex items-center gap-2 bg-white px-6 py-3 font-bold text-black transition-colors hover:bg-gray-200"
+            >
+              <Icon name="github" size={18} /> GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/dhanushnehru/"
+              target="_blank"
+              rel="noreferrer"
+              class="flex items-center gap-2 border border-white/20 px-6 py-3 font-bold transition-colors hover:bg-white/5"
+            >
+              <Icon name="linkedin" size={18} /> LinkedIn
+            </a>
+          </div>
+        </div>
+
+        {/* Hero Right - Chessboard Abstract */}
+        <div class="hidden h-[500px] grid-cols-4 grid-rows-4 border border-white/5 lg:grid">
+          {
+            [...Array(16)].map((_, i) => {
+              const isDark = (Math.floor(i / 4) + (i % 4)) % 2 === 1;
+              return (
+                <div
+                  data-reveal="scale"
+                  style={`--delay: ${100 + i * 50}ms`}
+                  class:list={[
+                    isDark ? 'bg-chess-dark' : 'bg-[#111]',
+                    'group relative flex items-center justify-center overflow-hidden',
+                  ]}
+                >
+                  {i === 5 && (
+                    <Icon
+                      name="code"
+                      class="h-1/2 w-1/2 text-chess-accent/30 transition-colors duration-500 group-hover:text-chess-accent"
+                    />
+                  )}
+                  {i === 10 && (
+                    <Icon
+                      name="book-open"
+                      class="h-1/2 w-1/2 text-white/10 transition-colors duration-500 group-hover:text-white"
+                    />
+                  )}
+                  <div class="absolute inset-0 bg-chess-accent/0 transition-colors duration-500 group-hover:bg-chess-accent/10" />
+                </div>
+              );
+            })
+          }
+        </div>
+      </section>
+
+      {/* Medium Articles Section */}
+      <section id="articles" class="mb-32 scroll-mt-8">
+        <div class="mb-12 flex items-end justify-between border-b border-white/10 pb-6">
+          <div>
+            <h2 class="flex items-center gap-3 text-4xl font-black">
+              <Icon name="book-open" size={32} class="text-chess-accent" />
+              Latest Strategies
+            </h2>
+            <p class="mt-2 text-gray-400">Insights and deep dives from my blog.</p>
+          </div>
+          <a
+            href={BLOG_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="hidden items-center gap-2 font-bold text-chess-accent transition-colors hover:text-white sm:flex"
+          >
+            View All <Icon name="arrow-right" size={16} />
+          </a>
+        </div>
+
+        {
+          articles.length > 0 ? (
+            <div class="grid grid-cols-1 gap-0 border border-white/5 md:grid-cols-2 lg:grid-cols-4">
+              {articles.map((article, i) => (
+                <a
+                  href={article.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-reveal
+                  data-scroll
+                  style={`--delay: ${i * 100}ms`}
+                  class:list={[
+                    i % 2 !== 0 ? 'bg-chess-dark' : 'bg-[#111]',
+                    'group relative flex h-80 flex-col justify-between overflow-hidden p-6 sm:p-8',
+                  ]}
+                >
+                  <div class="absolute inset-0 z-0 bg-chess-accent/0 transition-colors duration-300 group-hover:bg-chess-accent/5" />
+                  <div class="relative z-10">
+                    <time datetime={article.date.toISOString()} class="mb-4 block font-mono text-xs text-gray-500">
+                      {formatDate(article.date)}
+                    </time>
+                    <h3 class="line-clamp-4 text-xl leading-tight font-bold transition-colors group-hover:text-chess-accent">
+                      {article.title}
+                    </h3>
+                  </div>
+                  <div class="relative z-10 mt-4 flex items-center justify-between text-gray-400 group-hover:text-white">
+                    <span class="text-sm font-semibold tracking-wider uppercase">Read Article</span>
+                    <Icon name="external-link" size={16} />
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <a
+              href={BLOG_URL}
+              target="_blank"
+              rel="noreferrer"
+              class="flex items-center justify-between border border-white/5 bg-chess-dark p-8 font-bold text-gray-300 transition-colors hover:text-chess-accent"
+            >
+              Read the latest articles on the blog <Icon name="arrow-right" size={16} />
+            </a>
+          )
+        }
+      </section>
+
+      {/* YouTube Section */}
+      <section id="videos" class="mb-32 scroll-mt-8">
+        <div class="mb-12 flex items-end justify-between border-b border-white/10 pb-6">
+          <div>
+            <h2 class="flex items-center gap-3 text-4xl font-black">
+              <Icon name="play-circle" size={32} class="text-chess-accent" />
+              Video Tactics
+            </h2>
+            <p class="mt-2 text-gray-400">Latest content from The Curious Guy.</p>
+          </div>
+          <a
+            href={YOUTUBE_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="hidden items-center gap-2 font-bold text-chess-accent transition-colors hover:text-white sm:flex"
+          >
+            Subscribe <Icon name="arrow-right" size={16} />
+          </a>
+        </div>
+
+        {
+          videos.length > 0 ? (
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {videos.map((video, i) => (
+                <a
+                  href={video.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-reveal="pop"
+                  data-scroll
+                  style={`--delay: ${i * 100}ms`}
+                  class="group flex items-center gap-6 border border-white/10 bg-chess-dark p-6 transition-colors hover:border-chess-accent/50"
+                >
+                  <div class="flex h-16 w-16 shrink-0 items-center justify-center bg-[#111] text-gray-600 transition-all duration-300 group-hover:scale-110 group-hover:text-chess-accent sm:h-24 sm:w-24">
+                    <Icon name="play-circle" size={32} />
+                  </div>
+                  <div>
+                    <h3 class="line-clamp-2 text-lg font-bold text-gray-200 group-hover:text-white sm:text-xl">
+                      {video.title}
+                    </h3>
+                    <span class="mt-2 inline-block font-mono text-sm text-chess-accent">Watch on YouTube</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <a
+              href={YOUTUBE_URL}
+              target="_blank"
+              rel="noreferrer"
+              class="flex items-center justify-between border border-white/10 bg-chess-dark p-8 font-bold text-gray-300 transition-colors hover:text-chess-accent"
+            >
+              Watch the latest videos on YouTube <Icon name="arrow-right" size={16} />
+            </a>
+          )
+        }
+      </section>
+    </main>
+
+    {/* Footer */}
+    <footer class="mt-20 border-t border-white/10 pt-10 pb-10 text-center font-mono text-sm text-gray-500">
+      <p>© {new Date().getFullYear()} Dhanush Nehru. Checkmate.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Reveal cards as they scroll into view
+    const observer = new IntersectionObserver(
+      entries =>
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }),
+      { threshold: 0.1 },
+    );
+    document.querySelectorAll('[data-scroll]').forEach(el => observer.observe(el));
+  </script>
+</Layout>

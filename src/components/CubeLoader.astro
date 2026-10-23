@@ -1,0 +1,158 @@
+---
+import { CUBIE_SIZE, HOME, STICKERS, notation, randomScramble, scrambled, solve, toCss } from '../lib/cube';
+
+// The scramble is picked at build time and rendered already scrambled, so the cube shows before any JS runs.
+const scramble = randomScramble(12);
+const cubies = scrambled(scramble);
+const solution = solve(scramble);
+---
+
+<div
+  id="cube-loader"
+  data-scramble={JSON.stringify(scramble)}
+  class="fixed inset-0 z-50 flex-col items-center justify-center gap-6 bg-chess-black text-chess-light"
+  role="status"
+  aria-label="Loading"
+>
+  {/* The cube draws well outside its 1-cubie layout box, so reserve room for the whole thing */}
+  <div class="flex items-center justify-center" style={`perspective: 800px; width: ${CUBIE_SIZE * 5}px; height: ${CUBIE_SIZE * 5}px`}>
+    <div data-pulse style="transform-style: preserve-3d">
+      <div
+        data-cube
+        class="relative"
+        style={`width: ${CUBIE_SIZE}px; height: ${CUBIE_SIZE}px; transform-style: preserve-3d; transform: rotateX(-28deg) rotateY(-40deg)`}
+      >
+        {HOME.map((home, i) => (
+          <div data-cubie class="absolute inset-0" style={`transform-style: preserve-3d; transform: ${toCss(cubies[i])}`}>
+            {STICKERS.map(s => (
+              <div class="absolute inset-0 bg-[#111] p-[3px]" style={`transform: ${s.transform} translateZ(${CUBIE_SIZE / 2}px)`}>
+                <div
+                  class="h-full w-full rounded-[5px]"
+                  style={`background-color: ${home[s.axis] === s.side ? s.color : '#111'}`}
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-center gap-3 px-4 font-mono text-sm">
+    <p data-status class="tracking-widest text-chess-accent">&lt;SOLVING /&gt;</p>
+    <p class="flex max-w-xs flex-wrap justify-center gap-x-2 gap-y-1">
+      {solution.map((m, i) => <span data-move class={i === 0 ? 'text-chess-accent' : 'text-gray-600'}>{notation(m)}</span>)}
+    </p>
+  </div>
+
+  <button
+    data-skip
+    type="button"
+    class="absolute right-8 bottom-8 cursor-pointer font-mono text-xs tracking-widest text-gray-500 uppercase transition-colors hover:text-chess-accent"
+  >
+    Skip →
+  </button>
+</div>
+
+<style>
+  #cube-loader {
+    display: none;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  :global(html.loading) #cube-loader,
+  #cube-loader.is-leaving {
+    display: flex;
+  }
+
+  #cube-loader.is-leaving {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [data-pulse].is-solved {
+    animation: pulse 0.45s ease-out;
+  }
+
+  @keyframes pulse {
+    50% {
+      scale: 1.12;
+    }
+  }
+</style>
+
+<script>
+  import { FACES, bake, inLayer, scrambled, solve, toCss, turnAngle, type Move } from '../lib/cube';
+
+  const HOLD_MS = 350;
+  const TURN_MS = 180;
+  const SOLVED_HOLD_MS = 650;
+
+  const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  const loader = document.getElementById('cube-loader');
+
+  if (loader && document.documentElement.classList.contains('loading')) {
+    const scramble: Move[] = JSON.parse(loader.dataset.scramble ?? '[]');
+    const solution = solve(scramble);
+    const cubies = scrambled(scramble);
+    const cubieEls = [...loader.querySelectorAll<HTMLElement>('[data-cubie]')];
+    const moveEls = [...loader.querySelectorAll<HTMLElement>('[data-move]')];
+    const cube = loader.querySelector<HTMLElement>('[data-cube]')!;
+    const pulse = loader.querySelector<HTMLElement>('[data-pulse]')!;
+    const status = loader.querySelector<HTMLElement>('[data-status]')!;
+
+    const start = performance.now();
+    let current = 0;
+    let turnStart = start + HOLD_MS;
+    let doneTimer: number | undefined;
+    let raf = 0;
+
+    const finish = () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(doneTimer);
+      loader.classList.add('is-leaving');
+      document.documentElement.classList.replace('loading', 'ready');
+      window.setTimeout(() => loader.remove(), 500);
+    };
+
+    const highlight = () =>
+      moveEls.forEach((el, i) => {
+        el.className = i < current ? 'text-chess-light' : i === current ? 'text-chess-accent' : 'text-gray-600';
+      });
+
+    const frame = (now: number) => {
+      cube.style.transform = `rotateX(-28deg) rotateY(${-40 + (now - start) * 0.02}deg)`;
+
+      if (current < solution.length && now >= turnStart) {
+        const move = solution[current];
+        const t = Math.min((now - turnStart) / TURN_MS, 1);
+        const axis = FACES[move.face].axis.toUpperCase();
+        cubies.forEach((c, i) => {
+          if (inLayer(c, move)) {
+            cubieEls[i].style.transform = `rotate${axis}(${easeInOutCubic(t) * turnAngle(move)}deg) ${toCss(c)}`;
+          }
+        });
+
+        if (t === 1) {
+          bake(cubies, move);
+          cubies.forEach((c, i) => (cubieEls[i].style.transform = toCss(c)));
+          current += 1;
+          turnStart = now;
+          highlight();
+
+          if (current === solution.length) {
+            status.textContent = '<SOLVED />';
+            pulse.classList.add('is-solved');
+            doneTimer = window.setTimeout(finish, SOLVED_HOLD_MS);
+          }
+        }
+      }
+
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+    loader.querySelector('[data-skip]')?.addEventListener('click', finish);
+  }
+</script>
