@@ -88,6 +88,7 @@ const App = () => {
           <a href="#about" className="hover:text-chess-accent transition-colors">About</a>
           <a href="#articles" className="hover:text-chess-accent transition-colors">Writings</a>
           <a href="#videos" className="hover:text-chess-accent transition-colors">Videos</a>
+          <a href="https://blog.dhanushnehru.got-a.page/" target="_blank" rel="noreferrer" className="hover:text-chess-accent transition-colors">Blog</a>
         </motion.nav>
       </header>
 
@@ -150,7 +151,7 @@ const App = () => {
               </h2>
               <p className="text-gray-400 mt-2">Insights and deep dives from my Medium blog.</p>
             </div>
-            <a href="https://dhanushnehru.medium.com/" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-2 text-chess-accent font-bold hover:text-white transition-colors">
+            <a href="https://blog.dhanushnehru.got-a.page/" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-2 text-chess-accent font-bold hover:text-white transition-colors">
               View All <ArrowRight size={16} />
             </a>
           </div>
