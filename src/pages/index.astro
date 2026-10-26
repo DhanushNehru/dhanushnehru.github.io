@@ -9,7 +9,7 @@ const projects = [
  {name:'OpenDrop', cat:'Web', no:'04', piece:'♟', tag:'Peer-to-peer by design', desc:'A file-sharing tool for direct device-to-device transfers over your local network.', detail:'WebRTC data channels carry local transfers, with a lightweight signaling server for connection setup and a separate share-link mode.', tech:'WebRTC / JavaScript / Node.js', url:'https://github.com/DhanushNehru/OpenDrop'},
 ];
 ---
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Dhanush Nehru | Every move with intent</title><meta name="description" content="Engineer, open-source builder and technical writer. Explore Dhanush Nehru's projects in security, AI and the web with an interactive chess portfolio."/><link rel="canonical" href="https://dhanushnehru.got-a.page/"/><meta name="theme-color" content="#161b22"/><meta property="og:title" content="Dhanush Nehru | Every move with intent"/><meta property="og:description" content="Engineering, security and open source. Every move with intent."/><meta property="og:type" content="website"/></head><body><a class="skip" href="#main">Skip to content</a>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Dhanush Nehru | Every move with intent</title><meta name="description" content="Engineer, open-source builder and technical writer. Explore Dhanush Nehru's projects in security, AI and the web with an interactive chess portfolio."/><link rel="canonical" href="https://dhanushnehru.got-a.page/"/><meta name="theme-color" content="#161b22"/><meta property="og:title" content="Dhanush Nehru | Every move with intent"/><meta property="og:description" content="Engineering, security and open source. Every move with intent."/><meta property="og:type" content="website"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap"/><script is:inline>if(!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.classList.add("intro-on");setTimeout(function(){document.documentElement.classList.remove("intro-on")},12000)}</script></head><body><div class="cube-intro" id="intro" role="dialog" aria-label="Opening animation" aria-modal="false"><button type="button" class="intro-skip" id="intro-skip">Skip intro <span aria-hidden="true">&rarr;</span></button><div class="intro-stage"><div class="cube-scene" aria-hidden="true"><div class="cube" id="cube"></div></div><div class="intro-name" aria-label="Dhanush Nehru"><span class="intro-line" id="intro-name" aria-hidden="true"></span><span class="intro-sub" aria-hidden="true">Every move with intent.</span></div></div></div><a class="skip" href="#main">Skip to content</a>
 <header class="header wrap"><a class="brand" href="#"><span class="brand-mark">d<span>n</span>.</span><span class="brand-name">DHANUSH NEHRU<span>ENGINEER / MAKER / EXPLORER</span></span></a><nav aria-label="Main navigation"><a href="#work">Work</a><a href="#about">About</a><a href="#journal">Journal</a></nav><a class="header-cta" href="https://www.linkedin.com/in/dhanushnehru/">Let's connect <span>↗</span></a></header>
 <main id="main">
 <section class="hero wrap" aria-labelledby="hero-title"><div class="hero-copy"><p class="eyebrow"><span class="dot"></span> THE ART OF THINKING AHEAD</p><h1 id="hero-title">Every move.<br />With <em>intent.</em></h1><p class="intro">I'm Dhanush. I turn complex problems into useful software, then share what I learn along the way.</p><p class="hero-disciplines">ENGINEERING <span>+</span> SECURITY <span>+</span> OPEN SOURCE</p><div class="hero-actions"><a class="button primary" href="#work">Explore my work <span>↘</span></a><a class="text-link" href="https://github.com/DhanushNehru">GitHub <span>↗</span></a></div><div class="hero-note"><span>♞</span><p>Curiosity is the opening.<br /><strong>Building is the next move.</strong></p></div></div>
@@ -57,6 +57,75 @@ if(board){
 }
 // filter transition
 document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{if(reduce)return;let i=0;document.querySelectorAll<HTMLElement>('[data-category]:not([hidden])').forEach(c=>{c.animate([{opacity:0,transform:'translateY(22px) scale(.97)'},{opacity:1,transform:'none'}],{duration:620,delay:i++*70,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});});}));
+
+// ---- cube intro ----
+(()=>{
+ const intro=document.getElementById('intro');
+ const root=document.documentElement;
+ if(!intro||!root.classList.contains('intro-on'))return;
+ const cubeEl=document.getElementById('cube')!;
+ const nameEl=document.getElementById('intro-name')!;
+ let finished=false;
+ const finish=()=>{if(finished)return;finished=true;intro.classList.add('done');root.classList.remove('intro-on');setTimeout(()=>intro.remove(),1000);};
+ document.getElementById('intro-skip')?.addEventListener('click',finish);
+ addEventListener('keydown',e=>{if(e.key==='Escape')finish();});
+ setTimeout(finish,11000);
+ type M=number[];
+ const S=60;
+ const mul=(a:M,b:M):M=>{const r=new Array(16).fill(0);for(let c=0;c<4;c++)for(let rI=0;rI<4;rI++){let v=0;for(let k=0;k<4;k++)v+=a[k*4+rI]*b[c*4+k];r[c*4+rI]=v;}return r;};
+ const rot=(axis:number,deg:number):M=>{const t=deg*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
+  if(axis===0)return[1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1];
+  if(axis===1)return[c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1];
+  return[c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1];};
+ const trans=(x:number,y:number,z:number):M=>[1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1];
+ const css=(m:M)=>'matrix3d('+m.map(v=>Math.abs(v)<1e-6?0:+v.toFixed(5)).join(',')+')';
+ const colors=['#e06a5c','#dca36e','#f4efe6','#6f9bd1','#7fd4b0','#e9c46a'];
+ // faces: +x,-x,+y,-y,+z,-z
+ const faceDefs:[string,number[]][]=[['rotateY(90deg)',[1,0,0]],['rotateY(-90deg)',[-1,0,0]],['rotateX(-90deg)',[0,1,0]],['rotateX(90deg)',[0,-1,0]],['rotateZ(0deg)',[0,0,1]],['rotateY(180deg)',[0,0,-1]]];
+ type Cubie={el:HTMLElement;m:M;p:number[]};
+ const cubies:Cubie[]=[];
+ for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){
+  const el=document.createElement('div');el.className='cubie';
+  faceDefs.forEach(([tf,n],fi)=>{const f=document.createElement('div');f.className='face';f.style.transform=`${tf} translateZ(${S/2}px)`;
+   const outer=n[0]===x&&x!==0||n[1]===y&&y!==0||n[2]===z&&z!==0;
+   if(outer&&((n[0]!==0&&n[0]===x)||(n[1]!==0&&n[1]===y)||(n[2]!==0&&n[2]===z))){const i=document.createElement('i');i.style.setProperty('--c',colors[fi]);f.appendChild(i);}
+   el.appendChild(f);});
+  const m=trans(x*S,y*S,z*S);el.style.transform=css(m);cubeEl.appendChild(el);cubies.push({el,m,p:[x,y,z]});
+ }
+ // sanity: verify position rotation matches matrix by recomputing from matrix
+ const sync=()=>cubies.forEach(c=>{c.p=[Math.round(c.m[12]/S),Math.round(c.m[13]/S),Math.round(c.m[14]/S)];});
+ const turnAnim=(axis:number,layer:number,dir:number,ms:number)=>new Promise<void>(res=>{
+  const set=cubies.filter(c=>c.p[axis]===layer);const t0=performance.now();
+  const ease=(t:number)=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const tick=(now:number)=>{if(finished){res();return;}const t=Math.min(1,(now-t0)/ms);const g=rot(axis,90*dir*ease(t));set.forEach(c=>{c.el.style.transform=css(mul(g,c.m));});
+   if(t<1)requestAnimationFrame(tick);else{const g2=rot(axis,90*dir);set.forEach(c=>{c.m=mul(g2,c.m);c.el.style.transform=css(c.m);});sync();res();}};
+  requestAnimationFrame(tick);});
+ // scramble instantly, solve by inverse sequence
+ const seq:[number,number,number][]=[];
+ let last=-1;
+ for(let i=0;i<9;i++){let ax=Math.floor(Math.random()*3);if(ax===last)ax=(ax+1)%3;last=ax;seq.push([ax,Math.random()<.5?-1:1,Math.random()<.5?-1:1]);}
+ seq.forEach(([ax,l,d])=>{const g=rot(ax,90*d);cubies.filter(c=>c.p[ax]===l).forEach(c=>{c.m=mul(g,c.m);c.el.style.transform=css(c.m);});sync();});
+ const sleep=(ms:number)=>new Promise<void>(r=>setTimeout(r,ms));
+ // name letters
+ const label='Dhanush Nehru';
+ [...label].forEach(ch=>{const sp=document.createElement('span');sp.textContent=ch===' '?'\u00a0':ch;nameEl.appendChild(sp);});
+ Array.from(nameEl.children).forEach((c,i)=>(c as HTMLElement).style.transitionDelay=`${i*60}ms`);
+ // slow spin of the whole cube while solving
+ const spinStart=performance.now();
+ const spin=(now:number)=>{if(finished)return;const t=(now-spinStart)/1000;cubeEl.style.transform=`rotateX(${-26+Math.sin(t*.9)*6}deg) rotateY(${-36+t*34}deg)`;requestAnimationFrame(spin);};
+ requestAnimationFrame(spin);
+ (async()=>{
+  await sleep(700);
+  for(let i=seq.length-1;i>=0&&!finished;i--){const [ax,l,d]=seq[i];await turnAnim(ax,l,-d,i>3?430:520);await sleep(60);}
+  if(finished)return;
+  await sleep(350);
+  intro.classList.add('reveal');
+  await sleep(250);
+  nameEl.classList.add('show');
+  await sleep(2100);
+  finish();
+ })();
+})();
 </script>
 </body></html>
 
@@ -141,5 +210,44 @@ summary span{transition:transform .45s var(--ease)}
 .contact{transition:border-color .6s}
 @media(hover:none){.project:hover{transform:none;box-shadow:none}.article:hover,.video:hover,.playbook-row:hover{padding-left:0}}
 @media(prefers-reduced-motion:reduce){.js-reveal [data-reveal],.js-reveal .about-section{opacity:1!important;transform:none!important;clip-path:none!important}.hero:before{animation:none}.progress{display:none}.chessboard{transform:rotateX(18deg) rotateZ(-7deg)}.project:hover,.button:hover span{transform:none}}
+
+/* ---------- Typography ---------- */
+:root{--display:'Fraunces',Georgia,'Times New Roman',serif;--body:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-family:var(--body)}
+body{font-family:var(--body);font-feature-settings:'cv11','ss03'}
+h1,h2,h3,.brand-mark,.about-intro{font-family:var(--display);font-optical-sizing:auto}
+h1{font-weight:500;letter-spacing:-.035em;line-height:1.02}
+h2{font-weight:400;letter-spacing:-.03em;line-height:1.08}
+h3{font-weight:500;letter-spacing:-.015em}
+em{font-family:var(--display);font-style:italic;font-weight:300;color:var(--copper);letter-spacing:-.02em}
+.eyebrow,.tiny-label,.board-top,.board-caption,.brand-name>span,.project-top,.project-foot,.project-tag,.hero-disciplines,.ticker,.code-line,.coord,.filters button,[data-filter]{font-family:var(--mono)}
+.eyebrow{font-size:11.5px;letter-spacing:.18em;font-weight:500}
+nav a,.button,.text-link{font-family:var(--body);letter-spacing:.02em}
+.intro-name,.intro-line{font-family:var(--display)}
+
+/* ---------- Cube intro ---------- */
+.cube-intro{display:none}
+html.intro-on .cube-intro{display:grid;position:fixed;inset:0;z-index:200;background:radial-gradient(ellipse 70% 60% at 50% 45%,#222a35,#161b22 70%);place-items:center;overflow:hidden;transition:opacity .9s var(--ease),visibility .9s}
+html.intro-on{overflow:hidden}
+html.intro-on .hero-copy>*,html.intro-on .board-panel,html.intro-on .chessboard,html.intro-on .header{animation-play-state:paused}
+.cube-intro.done{opacity:0;visibility:hidden;pointer-events:none}
+.cube-intro:before{content:'';position:absolute;inset:0;background:conic-gradient(#ffffff08 25%,transparent 0 50%,#ffffff08 0 75%,transparent 0) 0 0/96px 96px;-webkit-mask-image:radial-gradient(ellipse 55% 55% at 50% 50%,#000,transparent 80%);mask-image:radial-gradient(ellipse 55% 55% at 50% 50%,#000,transparent 80%)}
+.intro-skip{position:absolute;top:22px;right:22px;z-index:3;background:transparent;border:1px solid var(--line);color:var(--slate);font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:11px 16px;cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+.intro-skip:hover,.intro-skip:focus-visible{color:var(--ink);background:var(--copper);border-color:var(--copper)}
+.intro-stage{position:relative;display:grid;place-items:center;width:100%;height:100%}
+.cube-scene{position:absolute;left:50%;top:50%;margin:-105px 0 0 -105px;width:210px;height:210px;perspective:900px;transition:transform 1s var(--ease),opacity .8s var(--ease);display:grid;place-items:center}
+.cube{position:relative;width:0;height:0;transform-style:preserve-3d;transform:rotateX(-26deg) rotateY(-36deg)}
+.cube .cubie{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.cube .face{position:absolute;left:-30px;top:-30px;width:60px;height:60px;background:#0d1117;border:1px solid #000;backface-visibility:hidden;display:grid;place-items:center}
+.cube .face i{display:block;width:86%;height:86%;border-radius:7px;background:var(--c);box-shadow:inset 0 0 0 1px #0002,inset 0 -6px 10px #0000002e}
+.intro-name{position:relative;text-align:center;opacity:0;pointer-events:none}
+.intro-line{display:block;font-size:clamp(40px,9vw,104px);line-height:1;letter-spacing:-.035em;font-weight:500;color:var(--ivory);white-space:nowrap}
+.intro-line span{display:inline-block;opacity:0;transform:translateY(.5em) rotateX(40deg);filter:blur(6px);transition:opacity .7s var(--ease),transform .9s var(--ease),filter .7s var(--ease)}
+.intro-line span:nth-child(n+9){color:var(--copper)}
+.intro-line.show span{opacity:1;transform:none;filter:none}
+.intro-sub{display:block;margin-top:22px;font:500 12px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--slate);opacity:0;transition:opacity .8s .5s}
+.cube-intro.reveal .intro-name{opacity:1}.cube-intro.reveal .intro-sub{opacity:1}
+.cube-intro.reveal .cube-scene{transform:scale(.22) translateY(-60px);opacity:0}
+@media(max-width:600px){.cube-scene{transform:scale(.8)}.cube-intro.reveal .cube-scene{transform:scale(.18) translateY(-60px)}.intro-line{font-size:clamp(34px,11vw,56px)}}
+@media(prefers-reduced-motion:reduce){.cube-intro{display:none!important}}
 </style>
 
