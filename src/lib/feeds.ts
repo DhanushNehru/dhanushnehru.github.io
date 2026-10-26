@@ -14,7 +14,7 @@ const parser = new XMLParser({ ignoreAttributes: false });
 // Feeds are fetched once at build time. A failed feed renders an empty section instead of failing the deploy.
 const fetchFeed = async (url: string) => {
   try {
-    const res = await fetch(url, { headers: { 'User-Agent': 'dhanushnehru-portfolio-build' } });
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000), headers: { 'User-Agent': 'dhanushnehru-portfolio-build' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parser.parse(await res.text());
   } catch (err) {
