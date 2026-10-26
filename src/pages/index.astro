@@ -38,4 +38,6 @@ document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach(btn=>btn.a
 .hero>*,.about-grid>*,.project-grid>*,.videos>*{min-width:0}.chessboard{min-width:0}.square{min-width:0}.project-art{min-width:0}.code-line{overflow-wrap:anywhere}
 
 .coord:after{content:attr(data-coordinate)}
+
+.chessboard{aspect-ratio:1;grid-template-rows:repeat(8,minmax(0,1fr))}.square{aspect-ratio:auto;height:100%;min-height:0}.piece{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%)}
 </style>
