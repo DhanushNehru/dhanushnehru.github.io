@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-chess-black: #0a0a0a;
+  --color-chess-dark: #1a1a1a;
+  --color-chess-gray: #333333;
+  --color-chess-light: #f5f5f5;
+  --color-chess-white: #ffffff;
+  --color-chess-accent: #4f46e5;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+@utility bg-chess-pattern {
+  background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M20 20h20v20H20zM0 0h20v20H0z" fill="%231a1a1a" fill-opacity="0.4" fill-rule="evenodd"/%3E%3C/svg%3E');
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Keep the page still while the cube loader is up */
+html.loading body {
+  overflow: hidden;
+}
+
+/* Entrance animations. Elements stay visible when JS is off (no class on <html>). */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: var(--reveal-x, 0) var(--reveal-y, 0);
+    scale: var(--reveal-scale, 1);
+  }
+}
+
+[data-reveal] { --reveal-y: 20px; }
+[data-reveal="left"] { --reveal-x: -20px; --reveal-y: 0; }
+[data-reveal="right"] { --reveal-x: 20px; --reveal-y: 0; }
+[data-reveal="scale"] { --reveal-y: 0; --reveal-scale: 0.8; }
+[data-reveal="pop"] { --reveal-y: 0; --reveal-scale: 0.95; }
+
+html.loading [data-reveal],
+html.ready [data-reveal][data-scroll]:not(.is-visible) {
+  opacity: 0;
+}
+
+html.ready [data-reveal]:not([data-scroll]),
+html.ready [data-reveal].is-visible {
+  animation: reveal 0.5s ease-out var(--delay, 0ms) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal] {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Custom Scrollbar for a sleek look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4f46e5;
+}
