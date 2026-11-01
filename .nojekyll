@@ -1,0 +1,1 @@
+# Skip Jekyll processing so the automatic GitHub Pages build succeeds (site is deployed by Netlify).
